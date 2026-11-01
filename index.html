@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<title>Lista de regalos · Baby shower</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --surface-soft: rgba(255, 255, 255, 0.72);
+    --toolbar-bg: rgba(245, 245, 247, 0.72);
+    --text: #1d1d1f;
+    --muted: #6e6e73;
+    --line: rgba(0, 0, 0, 0.07);
+    --line-strong: rgba(0, 0, 0, 0.13);
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --green: #34c759;
+    --red: #ff3b30;
+    --field: rgba(118, 118, 128, 0.12);
+    --field-hover: rgba(118, 118, 128, 0.18);
+    --seg: rgba(118, 118, 128, 0.12);
+    --seg-active: #ffffff;
+    --card-selected: #f6fdf8;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+    --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.05), 0 18px 40px rgba(0, 0, 0, 0.09);
+    --glow-a: rgba(255, 209, 220, 0.55);
+    --glow-b: rgba(196, 222, 255, 0.5);
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000;
+      --surface: #1c1c1e;
+      --surface-soft: rgba(28, 28, 30, 0.72);
+      --toolbar-bg: rgba(0, 0, 0, 0.66);
+      --text: #f5f5f7;
+      --muted: #a1a1a6;
+      --line: rgba(255, 255, 255, 0.09);
+      --line-strong: rgba(255, 255, 255, 0.17);
+      --accent: #0a84ff;
+      --accent-hover: #3d9bff;
+      --green: #30d158;
+      --red: #ff453a;
+      --field: rgba(118, 118, 128, 0.24);
+      --field-hover: rgba(118, 118, 128, 0.32);
+      --seg: rgba(118, 118, 128, 0.24);
+      --seg-active: #636366;
+      --card-selected: rgba(48, 209, 88, 0.07);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --shadow-hover: 0 18px 40px rgba(0, 0, 0, 0.6);
+      --glow-a: rgba(255, 160, 185, 0.14);
+      --glow-b: rgba(110, 170, 255, 0.14);
+      color-scheme: dark;
+    }
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+                 "Segoe UI Variable Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  [hidden] { display: none !important; }
+
+  button, input { font: inherit; color: inherit; }
+
+  .container {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .body-locked { overflow: hidden; }
+
+  /* ---------- Fondo ---------- */
+
+  .hero-glow {
+    position: absolute;
+    top: -280px;
+    left: 0;
+    width: 100%;
+    height: 620px;
+    background:
+      radial-gradient(closest-side, var(--glow-a), transparent 72%) 24% 42% / 62% 82% no-repeat,
+      radial-gradient(closest-side, var(--glow-b), transparent 72%) 78% 32% / 62% 82% no-repeat;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding-top: calc(76px + env(safe-area-inset-top));
+    padding-bottom: 40px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 18px;
+    padding: 5px 12px 5px 10px;
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    background: var(--surface-soft);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .eyebrow .pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.16);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .eyebrow .pulse { box-shadow: 0 0 0 3px rgba(48, 209, 88, 0.18); }
+  }
+
+  .hero h1 {
+    margin: 0;
+    font-size: clamp(2.5rem, 6vw, 4.05rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+
+  .subtitle {
+    margin: 16px 0 0;
+    max-width: 480px;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .progress-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 0 0 auto;
+    width: 296px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--surface-soft);
+    box-shadow: var(--shadow-sm);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .ring {
+    position: relative;
+    flex: 0 0 auto;
+    width: 60px;
+    height: 60px;
+  }
+
+  .ring svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .ring circle {
+    fill: none;
+    stroke-width: 5;
+  }
+
+  .ring-track { stroke: var(--seg); }
+
+  .ring-value {
+    stroke: var(--green);
+    stroke-linecap: round;
+    stroke-dasharray: 119.38;
+    stroke-dashoffset: 119.38;
+    transition: stroke-dashoffset 0.7s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+
+  .ring-number {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .progress-figures {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress-total {
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .progress-hint {
+    margin: 3px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  /* ---------- Barra de herramientas ---------- */
+
+  .toolbar-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--toolbar-bg);
+    border-bottom: 1px solid var(--line);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .segmented {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 12px;
+    background: var(--seg);
+  }
+
+  .seg {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .seg:hover { color: var(--text); }
+
+  .seg.is-active {
+    background: var(--seg-active);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+  }
+
+  .seg:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .seg-count {
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.75;
+  }
+
+  .toolbar-count {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .search {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .search svg {
+    position: absolute;
+    top: 50%;
+    left: 13px;
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  .search input {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px 0 38px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: var(--field);
+    font-size: 14.5px;
+    outline: none;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .search input::placeholder { color: var(--muted); }
+
+  .search input:hover { background: var(--field-hover); }
+
+  .search input:focus {
+    background: var(--surface);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.18);
+  }
+
+  /* ---------- Encabezado de la lista ---------- */
+
+  .list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .list-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.022em;
+  }
+
+  /* ---------- Grid ---------- */
+
+  main {
+    position: relative;
+    z-index: 1;
+    padding-top: 30px;
+    padding-bottom: 24px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 132px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    appearance: none;
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1),
+                box-shadow 0.4s ease,
+                border-color 0.3s ease,
+                background 0.3s ease;
+    animation: card-in 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+    animation-delay: calc(var(--i) * 18ms);
+  }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--line-strong);
+  }
+
+  .card:active {
+    transform: scale(0.98);
+    transition-duration: 0.12s;
+  }
+
+  .card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .card.is-selected {
+    background: var(--card-selected);
+    border-color: rgba(52, 199, 89, 0.4);
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .card.is-selected { border-color: rgba(48, 209, 88, 0.4); }
+    .card::after { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04); }
+  }
+
+  .card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .card-name {
+    padding-right: 24px;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+    text-wrap: balance;
+  }
+
+  .card-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    margin-top: 9px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .dot {
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #c7c7cc;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card.is-selected .dot {
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.16);
+  }
+
+  .status-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-check {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.2);
+    transition: transform 0.45s cubic-bezier(0.2, 1.5, 0.4, 1), opacity 0.25s ease;
+  }
+
+  .card-check svg { width: 13px; height: 13px; }
+
+  .card.is-selected .card-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 64px 20px;
+    text-align: center;
+  }
+
+  .empty p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  /* ---------- Pie ---------- */
+
+  .footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 26px;
+    padding-bottom: calc(48px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+  }
+
+  .footer p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .link-btn {
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .link-btn:hover { background: var(--field); }
+
+  .link-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Modal ---------- */
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.32);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .backdrop.is-open { opacity: 1; }
+
+  .modal-grabber {
+    display: none;
+    width: 38px;
+    height: 5px;
+    margin: 0 auto 18px;
+    border-radius: 99px;
+    background: var(--field);
+  }
+
+  .modal {
+    width: min(420px, 100%);
+    max-height: calc(100vh - 40px);
+    max-height: calc(100dvh - 40px);
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--surface);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform: translateY(14px) scale(0.97);
+    transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+
+  .backdrop.is-open .modal { transform: none; }
+
+  .modal h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.022em;
+  }
+
+  .modal p {
+    margin: 0 0 20px;
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .field > span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .optional { font-weight: 400; }
+
+  .field input {
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid transparent;
+    border-radius: 13px;
+    background: var(--field);
+    font-size: 15px;
+    outline: none;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .field input:focus {
+    background: var(--surface);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.18);
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 11px 18px;
+    border: 0;
+    border-radius: 12px;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease, filter 0.2s ease;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .btn-ghost {
+    background: var(--field);
+    color: var(--text);
+  }
+
+  .btn-ghost:hover { background: var(--field-hover); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--accent-hover); }
+
+  .btn-danger {
+    background: var(--red);
+    color: #fff;
+  }
+
+  .btn-danger:hover { filter: brightness(1.06); }
+
+  /* ---------- Toast ---------- */
+
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    z-index: 200;
+    max-width: calc(100vw - 40px);
+    padding: 11px 18px;
+    border-radius: 99px;
+    background: rgba(29, 29, 31, 0.92);
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transform: translate(-50%, 18px);
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  /* ---------- Administración ---------- */
+
+  .admin-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding-top: calc(56px + env(safe-area-inset-top));
+    padding-bottom: 30px;
+  }
+
+  .admin-title {
+    margin: 0;
+    font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+
+  .admin-subtitle {
+    margin: 10px 0 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+
+  .pulse-alert {
+    background: #ff9f0a;
+    box-shadow: 0 0 0 3px rgba(255, 159, 10, 0.18);
+  }
+
+  .admin-main {
+    position: relative;
+    z-index: 1;
+    padding-top: 0;
+    padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  }
+
+  .admin-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-value.is-green { color: var(--green); }
+
+  .admin-panel {
+    margin-bottom: 18px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .admin-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .admin-toolbar .search {
+    flex: 1 1 220px;
+    max-width: 320px;
+  }
+
+  .admin-buttons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  .admin-buttons-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .btn-danger-text {
+    background: transparent;
+    color: var(--red);
+  }
+
+  .btn-danger-text:hover { background: rgba(255, 59, 48, 0.1); }
+
+  .admin-list-wrap {
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .admin-list-head,
+  .admin-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .admin-list-head {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .admin-row {
+    padding-top: 13px;
+    padding-bottom: 13px;
+    transition: background 0.2s ease;
+  }
+
+  .admin-row + .admin-row { border-top: 1px solid var(--line); }
+
+  .admin-row:hover { background: var(--field); }
+
+  .admin-gift {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .admin-gift-name {
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .chip {
+    padding: 3px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .chip-free {
+    background: var(--seg);
+    color: var(--muted);
+  }
+
+  .chip-taken {
+    background: rgba(52, 199, 89, 0.14);
+    color: #1a7f37;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .chip-taken {
+      background: rgba(48, 209, 88, 0.16);
+      color: var(--green);
+    }
+  }
+
+  .admin-reservation {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .admin-person {
+    overflow: hidden;
+    font-size: 13.5px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-date {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .admin-actions-cell {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .mini-btn {
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--field);
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .mini-btn:hover { background: var(--field-hover); }
+
+  .mini-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .mini-btn.is-danger {
+    background: transparent;
+    color: var(--red);
+  }
+
+  .mini-btn.is-danger:hover { background: rgba(255, 59, 48, 0.1); }
+
+  .admin-note {
+    margin: 18px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 860px) {
+    .hero {
+      align-items: flex-start;
+      padding-top: calc(52px + env(safe-area-inset-top));
+      gap: 28px;
+    }
+
+    .progress-card {
+      width: 100%;
+      max-width: 440px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .hero {
+      padding-top: calc(32px + env(safe-area-inset-top));
+      padding-bottom: 22px;
+      gap: 22px;
+    }
+
+    .eyebrow { margin-bottom: 14px; }
+
+    .hero h1 { font-size: 2.45rem; }
+
+    .subtitle {
+      margin-top: 12px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .progress-card {
+      gap: 13px;
+      padding: 13px 15px;
+    }
+
+    .ring {
+      width: 54px;
+      height: 54px;
+    }
+
+    .ring-number { font-size: 15px; }
+
+    .toolbar { padding-top: 10px; padding-bottom: 10px; }
+
+    .segmented { width: 100%; }
+
+    .seg {
+      flex: 1;
+      justify-content: center;
+      gap: 5px;
+      padding: 8px 6px;
+      font-size: 13px;
+    }
+
+    .seg-count,
+    .toolbar-count { display: none; }
+
+    main { padding-top: 22px; }
+
+    .list-header { margin-bottom: 12px; }
+
+    .list-title { font-size: 16px; }
+
+    .search { max-width: none; }
+
+    .search input,
+    .field input { font-size: 16px; }
+
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .card {
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+      min-height: 0;
+      padding: 15px 16px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      animation: none;
+    }
+
+    .card::after { display: none; }
+
+    .card:not([hidden]) ~ .card:not([hidden]) {
+      border-top: 1px solid var(--line);
+    }
+
+    .card:hover {
+      transform: none;
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    .card:active { background: var(--field); }
+
+    .card.is-selected {
+      background: var(--card-selected);
+      border-color: transparent;
+    }
+
+    .card-body {
+      flex: 1;
+      gap: 0;
+      justify-content: center;
+      width: auto;
+      margin: 0;
+    }
+
+    .card-name {
+      padding-right: 0;
+      font-size: 15.5px;
+    }
+
+    .card-status {
+      margin-top: 4px;
+      font-size: 12px;
+    }
+
+    .card-check {
+      position: static;
+      flex: 0 0 auto;
+      margin-left: auto;
+    }
+
+    .toast { bottom: calc(18px + env(safe-area-inset-bottom)); }
+
+    .backdrop {
+      align-items: end;
+      padding: 0;
+    }
+
+    .modal {
+      width: 100%;
+      padding: 14px 20px calc(22px + env(safe-area-inset-bottom));
+      border-radius: 26px 26px 0 0;
+      border-bottom: 0;
+      transform: translateY(100%);
+      transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .backdrop.is-open .modal { transform: translateY(0); }
+
+    .modal-grabber { display: block; }
+
+    .modal-actions { flex-direction: column-reverse; }
+
+    .modal-actions .btn { width: 100%; }
+
+    .footer {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: calc(34px + env(safe-area-inset-bottom));
+    }
+  }
+
+  @media (max-width: 360px) {
+    .hero h1 { font-size: 2.2rem; }
+    .card-name { font-size: 15px; }
+  }
+
+  @media (max-width: 700px) {
+    .admin-header {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 18px;
+      padding-top: calc(30px + env(safe-area-inset-top));
+      padding-bottom: 22px;
+    }
+
+    .admin-title { font-size: 2rem; }
+
+    .admin-subtitle {
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    .admin-header .btn { align-self: stretch; }
+
+    .admin-stats {
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat {
+      padding: 12px 13px;
+      border-radius: 16px;
+    }
+
+    .stat-label { font-size: 11px; }
+
+    .stat-value { font-size: 22px; }
+
+    .admin-panel {
+      padding: 12px;
+      border-radius: 18px;
+      margin-bottom: 14px;
+    }
+
+    .admin-toolbar { gap: 10px; }
+
+    .admin-toolbar .search {
+      flex: 1 1 100%;
+      max-width: none;
+    }
+
+    .admin-toolbar .segmented { width: 100%; }
+
+    .admin-toolbar .seg {
+      flex: 1;
+      justify-content: center;
+      padding: 8px 6px;
+      font-size: 13px;
+    }
+
+    .admin-toolbar .seg-count { display: none; }
+
+    .admin-buttons {
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+
+    .admin-buttons .btn {
+      flex: 1 1 auto;
+      padding: 10px 12px;
+      font-size: 13.5px;
+    }
+
+    .admin-buttons-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .admin-buttons-group .btn {
+      padding: 10px 8px;
+      font-size: 13px;
+    }
+
+    .admin-buttons-group .btn-danger-text { grid-column: 1 / -1; }
+
+    .admin-list-head { display: none; }
+
+    .admin-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        "gift actions"
+        "res actions";
+      gap: 6px 10px;
+      padding: 12px 14px;
+    }
+
+    .admin-gift { grid-area: gift; }
+
+    .admin-reservation { grid-area: res; }
+
+    .admin-actions-cell {
+      grid-area: actions;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .mini-btn {
+      padding: 6px 9px;
+      font-size: 12px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-delay: 0ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="hero-glow" aria-hidden="true"></div>
+
+  <div id="public-view">
+  <header class="hero container">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>Baby shower</p>
+      <h1>Lista de regalos</h1>
+      <p class="subtitle">Elige el regalo que quieres dar. Quedará marcado al instante para que nadie más lo repita.</p>
+    </div>
+
+    <aside class="progress-card" aria-label="Progreso de la lista">
+      <div class="ring" id="progress-ring" role="progressbar" aria-label="Regalos elegidos" aria-valuemin="0" aria-valuemax="25" aria-valuenow="0">
+        <svg viewBox="0 0 44 44" aria-hidden="true">
+          <circle class="ring-track" cx="22" cy="22" r="19"></circle>
+          <circle class="ring-value" id="ring-value" cx="22" cy="22" r="19"></circle>
+        </svg>
+        <span class="ring-number" id="progress-count">0</span>
+      </div>
+      <div class="progress-info">
+        <span class="progress-label">Regalos elegidos</span>
+        <span class="progress-figures"><span id="progress-count-inline">0</span> <span class="progress-total" id="progress-total">de 25</span></span>
+        <p class="progress-hint" id="progress-hint">Aún quedan 25 regalos</p>
+      </div>
+    </aside>
+  </header>
+
+  <div class="toolbar-wrap">
+    <div class="toolbar container">
+      <div class="segmented" role="group" aria-label="Filtrar regalos">
+        <button type="button" class="seg is-active" data-filter="all" aria-pressed="true">Todos <span class="seg-count" data-count="all">25</span></button>
+        <button type="button" class="seg" data-filter="available" aria-pressed="false">Disponibles <span class="seg-count" data-count="available">25</span></button>
+        <button type="button" class="seg" data-filter="chosen" aria-pressed="false">Elegidos <span class="seg-count" data-count="chosen">0</span></button>
+      </div>
+
+      <span class="toolbar-count" id="toolbar-count">0 de 25 elegidos</span>
+    </div>
+  </div>
+
+  <main class="container">
+    <div class="list-header">
+      <h2 class="list-title" id="list-title">Todos los regalos</h2>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.6-3.6"></path>
+        </svg>
+        <input id="search" type="search" placeholder="Buscar un regalo" aria-label="Buscar un regalo" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" hidden>
+      <p id="empty-text">No encontramos regalos con ese nombre.</p>
+      <button type="button" class="link-btn" id="empty-reset">Ver todos los regalos</button>
+    </div>
+  </main>
+
+  <footer class="footer container">
+    <p>Tu selección se guarda automáticamente en este dispositivo.</p>
+    <p>Solo los organizadores pueden liberar un regalo.</p>
+  </footer>
+  </div>
+
+  <div id="admin-view" hidden>
+    <header class="admin-header container">
+      <div>
+        <p class="eyebrow"><span class="pulse pulse-alert" aria-hidden="true"></span>Modo administrador</p>
+        <h1 class="admin-title">Administrar lista</h1>
+        <p class="admin-subtitle">Solo tú puedes liberar regalos y editar la lista.</p>
+      </div>
+      <button type="button" class="btn btn-ghost" id="view-public">Ver lista pública</button>
+    </header>
+
+    <main class="admin-main container">
+      <div class="admin-stats">
+        <div class="stat">
+          <span class="stat-label">Regalos</span>
+          <span class="stat-value" id="stat-total">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Elegidos</span>
+          <span class="stat-value is-green" id="stat-chosen">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Disponibles</span>
+          <span class="stat-value" id="stat-available">0</span>
+        </div>
+      </div>
+
+      <section class="admin-panel" aria-label="Herramientas de administración">
+        <div class="admin-toolbar">
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-3.6-3.6"></path>
+            </svg>
+            <input id="admin-search" type="search" placeholder="Buscar regalo o persona" aria-label="Buscar regalo o persona" autocomplete="off">
+          </div>
+
+          <div class="segmented" role="group" aria-label="Filtrar regalos">
+            <button type="button" class="seg is-active" data-admin-filter="all" aria-pressed="true">Todos <span class="seg-count" data-admin-count="all">0</span></button>
+            <button type="button" class="seg" data-admin-filter="available" aria-pressed="false">Disponibles <span class="seg-count" data-admin-count="available">0</span></button>
+            <button type="button" class="seg" data-admin-filter="chosen" aria-pressed="false">Elegidos <span class="seg-count" data-admin-count="chosen">0</span></button>
+          </div>
+        </div>
+
+        <div class="admin-buttons">
+          <button type="button" class="btn btn-primary" id="add-gift">Añadir regalo</button>
+          <div class="admin-buttons-group">
+            <button type="button" class="btn btn-ghost" id="export-csv">Exportar CSV</button>
+            <button type="button" class="btn btn-ghost" id="backup-json">Copia de seguridad</button>
+            <button type="button" class="btn btn-ghost" id="import-json">Importar</button>
+            <button type="button" class="btn btn-danger-text" id="admin-reset">Reiniciar reservas</button>
+          </div>
+          <input type="file" id="import-file" accept="application/json,.json" hidden>
+        </div>
+      </section>
+
+      <div class="admin-list-wrap" id="admin-list-wrap">
+        <div class="admin-list-head">
+          <span>Regalo</span>
+          <span>Reserva</span>
+          <span style="text-align: right;">Acciones</span>
+        </div>
+        <div id="admin-list"></div>
+      </div>
+
+      <div class="empty" id="admin-empty" hidden>
+        <p id="admin-empty-text">La lista está vacía. Añade un regalo para empezar.</p>
+        <button type="button" class="link-btn" id="admin-empty-reset">Quitar filtros</button>
+      </div>
+
+      <p class="admin-note">Los cambios se guardan en este navegador. Si abres la lista en otro dispositivo, verás datos distintos.</p>
+    </main>
+  </div>
+
+  <div class="backdrop" id="backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-text">
+      <div class="modal-grabber" aria-hidden="true"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-text"></p>
+      <label class="field" id="gift-field" for="gift-input" hidden>
+        <span>Nombre del regalo</span>
+        <input id="gift-input" type="text" maxlength="60" placeholder="Ej. Cuna" autocomplete="off">
+      </label>
+      <label class="field" id="name-field" for="name-input">
+        <span>Tu nombre <span class="optional">(opcional)</span></span>
+        <input id="name-input" type="text" maxlength="40" placeholder="Ej. Ana y Luis" autocomplete="name">
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="modal-cancel">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="modal-confirm">Marcar como elegido</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6.5 9.5 17 4 11.5"></path></svg>';
+
+  var DEFAULT_GIFTS = [
+    "Cuna",
+    "Coche",
+    "Esterilizador de teteros",
+    "Pañalera",
+    "PlayStation 5",
+    "Kit de extracción de leche",
+    "Cojín de lactancia",
+    "Teteros",
+    "Pañales",
+    "Pañitos húmedos",
+    "Pijamas",
+    "Baberos",
+    "Bañera",
+    "Kit de aseo",
+    "Medias",
+    "Mamelucos",
+    "Camisetas",
+    "Pantalones",
+    "Toallas",
+    "Cobijas",
+    "Gorritos",
+    "Crema antipañalitis",
+    "Termómetro",
+    "Sonajeros",
+    "Termo"
+  ];
+
+  var STORAGE_KEY = "lista-de-regalos-baby-v2";
+  var LEGACY_KEY = "lista-de-regalos-baby-v1";
+  var RING_CIRCUMFERENCE = 2 * Math.PI * 19;
+
+  var publicView = document.getElementById("public-view");
+  var adminView = document.getElementById("admin-view");
+
+  var grid = document.getElementById("grid");
+  var empty = document.getElementById("empty");
+  var emptyText = document.getElementById("empty-text");
+  var emptyReset = document.getElementById("empty-reset");
+  var searchInput = document.getElementById("search");
+  var progressCount = document.getElementById("progress-count");
+  var progressCountInline = document.getElementById("progress-count-inline");
+  var progressTotal = document.getElementById("progress-total");
+  var progressHint = document.getElementById("progress-hint");
+  var progressRing = document.getElementById("progress-ring");
+  var ringValue = document.getElementById("ring-value");
+  var toolbarCount = document.getElementById("toolbar-count");
+  var listTitle = document.getElementById("list-title");
+  var backdrop = document.getElementById("backdrop");
+  var modalTitle = document.getElementById("modal-title");
+  var modalText = document.getElementById("modal-text");
+  var giftField = document.getElementById("gift-field");
+  var giftInput = document.getElementById("gift-input");
+  var nameField = document.getElementById("name-field");
+  var nameInput = document.getElementById("name-input");
+  var cancelBtn = document.getElementById("modal-cancel");
+  var confirmBtn = document.getElementById("modal-confirm");
+  var toastEl = document.getElementById("toast");
+
+  var adminSearchInput = document.getElementById("admin-search");
+  var statTotal = document.getElementById("stat-total");
+  var statChosen = document.getElementById("stat-chosen");
+  var statAvailable = document.getElementById("stat-available");
+  var adminList = document.getElementById("admin-list");
+  var adminListWrap = document.getElementById("admin-list-wrap");
+  var adminEmpty = document.getElementById("admin-empty");
+  var adminEmptyText = document.getElementById("admin-empty-text");
+  var adminEmptyReset = document.getElementById("admin-empty-reset");
+  var addGiftBtn = document.getElementById("add-gift");
+  var exportCsvBtn = document.getElementById("export-csv");
+  var backupJsonBtn = document.getElementById("backup-json");
+  var importJsonBtn = document.getElementById("import-json");
+  var importFile = document.getElementById("import-file");
+  var adminResetBtn = document.getElementById("admin-reset");
+  var viewPublicBtn = document.getElementById("view-public");
+
+  var segButtons = Array.prototype.slice.call(publicView.querySelectorAll(".seg"));
+  var segCounts = {
+    all: publicView.querySelector('[data-count="all"]'),
+    available: publicView.querySelector('[data-count="available"]'),
+    chosen: publicView.querySelector('[data-count="chosen"]')
+  };
+  var adminSegButtons = Array.prototype.slice.call(adminView.querySelectorAll(".seg"));
+  var adminSegCounts = {
+    all: adminView.querySelector('[data-admin-count="all"]'),
+    available: adminView.querySelector('[data-admin-count="available"]'),
+    chosen: adminView.querySelector('[data-admin-count="chosen"]')
+  };
+
+  var state = loadState();
+  var adminMode = (function () {
+    try {
+      if (new URLSearchParams(window.location.search).has("admin")) return true;
+    } catch (error) {
+      /* URL no disponible */
+    }
+    return /^#admin/i.test(window.location.hash);
+  })();
+
+  var cards = new Map();
+  var filter = "all";
+  var query = "";
+  var adminFilter = "all";
+  var adminQuery = "";
+  var modalMode = "";
+  var activeGiftId = null;
+  var pendingImport = null;
+  var lastFocused = null;
+  var hideTimer = 0;
+  var toastTimer = 0;
+
+  function normalizeText(value) {
+    return String(value == null ? "" : value)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  }
+
+  function sanitizeName(value, max) {
+    if (typeof value !== "string") return "";
+    return value.replace(/\s+/g, " ").trim().slice(0, max);
+  }
+
+  function makeId(name, used) {
+    var base = normalizeText(name).replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    if (!base) base = "regalo";
+    var id = base;
+    var counter = 2;
+    while (used && used.has(id)) {
+      id = base + "-" + counter;
+      counter += 1;
+    }
+    return id;
+  }
+
+  function defaultState() {
+    var used = new Set();
+    var gifts = DEFAULT_GIFTS.map(function (name) {
+      var id = makeId(name, used);
+      used.add(id);
+      return { id: id, name: name };
+    });
+    return { gifts: gifts, selections: {} };
+  }
+
+  function sanitizeSelections(source, validIds) {
+    var selections = {};
+    if (!source || typeof source !== "object" || Array.isArray(source)) return selections;
+    Object.keys(source).forEach(function (id) {
+      if (!validIds.has(id)) return;
+      var entry = source[id];
+      var person = "";
+      var at = "";
+      if (typeof entry === "string") {
+        person = sanitizeName(entry, 40);
+      } else if (entry && typeof entry === "object") {
+        person = sanitizeName(entry.name, 40);
+        at = typeof entry.at === "string" ? entry.at : "";
+      } else {
+        return;
+      }
+      selections[id] = { name: person, at: at };
+    });
+    return selections;
+  }
+
+  function loadState() {
+    var fallback = defaultState();
+    var raw = null;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (error) { raw = null; }
+
+    if (raw) {
+      try {
+        var data = JSON.parse(raw);
+        if (data && Array.isArray(data.gifts)) {
+          var used = new Set();
+          var gifts = [];
+          data.gifts.forEach(function (item) {
+            var name = typeof item === "string"
+              ? sanitizeName(item, 60)
+              : sanitizeName(item && item.name, 60);
+            if (!name) return;
+            var rawId = item && typeof item === "object" && typeof item.id === "string" ? item.id : "";
+            var id = rawId && /^[a-z0-9-]+$/.test(rawId) && !used.has(rawId)
+              ? rawId
+              : makeId(name, used);
+            used.add(id);
+            gifts.push({ id: id, name: name });
+          });
+          return { gifts: gifts, selections: sanitizeSelections(data.selections, used) };
+        }
+      } catch (error) {
+        /* datos dañados: se regeneran abajo */
+      }
+    }
+
+    try {
+      var legacyRaw = localStorage.getItem(LEGACY_KEY);
+      if (legacyRaw) {
+        var legacy = JSON.parse(legacyRaw);
+        var legacyIds = new Set(fallback.gifts.map(function (gift) { return gift.id; }));
+        fallback.selections = sanitizeSelections(legacy, legacyIds);
+      }
+    } catch (error) {
+      /* sin datos previos */
+    }
+
+    return fallback;
+  }
+
+  function persist() {
+    var saved = false;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      saved = true;
+    } catch (error) {
+      saved = false;
+    }
+    if (saved) {
+      try { localStorage.removeItem(LEGACY_KEY); } catch (error) { /* sin datos previos */ }
+    }
+  }
+
+  function statusLabel(selection) {
+    if (!selection) return "Disponible";
+    return selection.name ? "Elegido por " + selection.name : "Elegido";
+  }
+
+  function giftById(id) {
+    for (var i = 0; i < state.gifts.length; i += 1) {
+      if (state.gifts[i].id === id) return state.gifts[i];
+    }
+    return null;
+  }
+
+  function formatDate(value) {
+    if (!value) return "";
+    var date = new Date(value);
+    if (isNaN(date.getTime())) return "";
+    try {
+      return date.toLocaleDateString("es", { day: "numeric", month: "short" });
+    } catch (error) {
+      return date.toISOString().slice(0, 10);
+    }
+  }
+
+  function buildCards() {
+    grid.textContent = "";
+    cards.clear();
+    state.gifts.forEach(function (gift, index) {
+      var card = document.createElement("button");
+      card.type = "button";
+      card.className = "card";
+      card.dataset.id = gift.id;
+      card.style.setProperty("--i", String(index));
+      card.innerHTML =
+        '<span class="card-body">' +
+          '<span class="card-name"></span>' +
+          '<span class="card-status"><span class="dot" aria-hidden="true"></span><span class="status-text"></span></span>' +
+        '</span>' +
+        '<span class="card-check" aria-hidden="true">' + CHECK_SVG + '</span>';
+
+      card.querySelector(".card-name").textContent = gift.name;
+      card.addEventListener("click", function () { openGift(gift); });
+
+      grid.appendChild(card);
+      cards.set(gift.id, card);
+    });
+  }
+
+  function updateCard(gift) {
+    var card = cards.get(gift.id);
+    if (!card) return;
+    var selection = state.selections[gift.id];
+    var label = statusLabel(selection);
+    card.classList.toggle("is-selected", Boolean(selection));
+    card.setAttribute("aria-pressed", selection ? "true" : "false");
+    card.setAttribute("aria-label", gift.name + ": " + label);
+    card.querySelector(".status-text").textContent = label;
+  }
+
+  function chosenCount() {
+    return state.gifts.reduce(function (total, gift) {
+      return total + (state.selections[gift.id] ? 1 : 0);
+    }, 0);
+  }
+
+  function updateProgress() {
+    var total = state.gifts.length;
+    var chosen = chosenCount();
+    var remaining = Math.max(total - chosen, 0);
+    var ratio = total ? chosen / total : 0;
+
+    progressCount.textContent = String(chosen);
+    progressCountInline.textContent = String(chosen);
+    progressTotal.textContent = "de " + total;
+    ringValue.style.strokeDashoffset = String(RING_CIRCUMFERENCE * (1 - ratio));
+    progressRing.setAttribute("aria-valuenow", String(chosen));
+    progressRing.setAttribute("aria-valuemax", String(total));
+    toolbarCount.textContent = chosen + " de " + total + " elegidos";
+
+    if (total === 0) {
+      progressHint.textContent = "La lista está vacía";
+    } else if (chosen === 0) {
+      progressHint.textContent = "Aún quedan " + total + " regalos";
+    } else if (remaining === 0) {
+      progressHint.textContent = "¡Lista completa! Gracias";
+    } else {
+      progressHint.textContent = "Quedan " + remaining + (remaining === 1 ? " regalo" : " regalos");
+    }
+
+    segCounts.all.textContent = String(total);
+    segCounts.available.textContent = String(remaining);
+    segCounts.chosen.textContent = String(chosen);
+  }
+
+  function applyFilters() {
+    var term = normalizeText(query.trim());
+    var visible = 0;
+
+    listTitle.textContent = filter === "available"
+      ? "Regalos disponibles"
+      : filter === "chosen"
+        ? "Regalos elegidos"
+        : "Todos los regalos";
+
+    state.gifts.forEach(function (gift) {
+      var card = cards.get(gift.id);
+      if (!card) return;
+      var isChosen = Boolean(state.selections[gift.id]);
+      var matchesFilter = filter === "all" || (filter === "chosen" ? isChosen : !isChosen);
+      var matchesQuery = !term || normalizeText(gift.name).indexOf(term) !== -1;
+      var show = matchesFilter && matchesQuery;
+      card.hidden = !show;
+      if (show) visible += 1;
+    });
+
+    if (term) {
+      emptyText.textContent = "No encontramos regalos con ese nombre.";
+    } else if (filter === "chosen") {
+      emptyText.textContent = "Todavía no has elegido ningún regalo.";
+    } else if (filter === "available") {
+      emptyText.textContent = "¡No queda ningún regalo disponible!";
+    } else {
+      emptyText.textContent = state.gifts.length ? "No hay regalos para mostrar." : "La lista está vacía por ahora.";
+    }
+
+    grid.hidden = visible === 0;
+    empty.hidden = visible !== 0;
+  }
+
+  function refreshPublic() {
+    state.gifts.forEach(updateCard);
+    updateProgress();
+    applyFilters();
+  }
+
+  function showToast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add("is-visible");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function () {
+      toastEl.classList.remove("is-visible");
+    }, 2400);
+  }
+
+  function openModal(focusTarget) {
+    window.clearTimeout(hideTimer);
+    backdrop.hidden = false;
+    document.body.classList.add("body-locked");
+    window.requestAnimationFrame(function () {
+      backdrop.classList.add("is-open");
+    });
+    window.setTimeout(function () {
+      var target = focusTarget && !focusTarget.hidden ? focusTarget : cancelBtn;
+      target.focus({ preventScroll: true });
+      if (target === nameInput || target === giftInput) target.select();
+    }, 90);
+  }
+
+  function closeModal() {
+    backdrop.classList.remove("is-open");
+    document.body.classList.remove("body-locked");
+    window.clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(function () {
+      backdrop.hidden = true;
+    }, 260);
+    if (lastFocused && document.contains(lastFocused)) {
+      lastFocused.focus({ preventScroll: true });
+    }
+    lastFocused = null;
+    pendingImport = null;
+  }
+
+  function setModal(options) {
+    modalTitle.textContent = options.title;
+    modalText.textContent = options.text || "";
+    modalText.hidden = !options.text;
+    giftField.hidden = !options.gift;
+    if (options.gift) giftInput.value = options.giftValue || "";
+    nameField.hidden = !options.name;
+    if (options.name) nameInput.value = options.nameValue || "";
+    confirmBtn.hidden = options.confirm === false;
+    confirmBtn.textContent = options.confirmLabel || "Aceptar";
+    confirmBtn.className = "btn " + (options.danger ? "btn-danger" : "btn-primary");
+    cancelBtn.textContent = options.cancelLabel || "Cancelar";
+  }
+
+  function nameExists(name, ignoreId) {
+    var target = normalizeText(name);
+    return state.gifts.some(function (gift) {
+      return gift.id !== ignoreId && normalizeText(gift.name) === target;
+    });
+  }
+
+  function openGift(gift) {
+    lastFocused = document.activeElement;
+    activeGiftId = gift.id;
+    var selection = state.selections[gift.id];
+
+    if (selection) {
+      modalMode = "info";
+      setModal({
+        title: "“" + gift.name + "” ya está elegido",
+        text: selection.name
+          ? "Elegido por " + selection.name + ". Solo los organizadores pueden liberarlo si fue un error."
+          : "Alguien ya lo eligió. Solo los organizadores pueden liberarlo si fue un error.",
+        confirm: false,
+        cancelLabel: "Cerrar"
+      });
+      openModal(cancelBtn);
+      return;
+    }
+
+    modalMode = "reserve";
+    setModal({
+      title: "Elegir “" + gift.name + "”",
+      text: "Escribe tu nombre para que los demás sepan quién lo regala. Puedes dejarlo vacío.",
+      name: true,
+      confirmLabel: "Marcar como elegido"
+    });
+    openModal(nameInput);
+  }
+
+  function openManualReserve(gift) {
+    lastFocused = document.activeElement;
+    activeGiftId = gift.id;
+    modalMode = "manual";
+    setModal({
+      title: "Marcar “" + gift.name + "” como elegido",
+      text: "Úsalo si alguien te avisó fuera de la página. Puedes dejar el nombre vacío.",
+      name: true,
+      confirmLabel: "Guardar reserva"
+    });
+    openModal(nameInput);
+  }
+
+  function openEdit(gift) {
+    lastFocused = document.activeElement;
+    activeGiftId = gift.id;
+    modalMode = "edit";
+    setModal({
+      title: "Editar regalo",
+      text: "Cambia el nombre del regalo. Las reservas se mantienen.",
+      gift: true,
+      giftValue: gift.name,
+      confirmLabel: "Guardar cambios"
+    });
+    openModal(giftInput);
+  }
+
+  function openDelete(gift) {
+    lastFocused = document.activeElement;
+    activeGiftId = gift.id;
+    modalMode = "delete";
+    setModal({
+      title: "¿Eliminar “" + gift.name + "”?",
+      text: state.selections[gift.id]
+        ? "También se borrará la reserva de este regalo. Esta acción no se puede deshacer."
+        : "Este regalo se quitará de la lista. Esta acción no se puede deshacer.",
+      danger: true,
+      confirmLabel: "Eliminar"
+    });
+    openModal(cancelBtn);
+  }
+
+  function openAdd() {
+    lastFocused = document.activeElement;
+    activeGiftId = null;
+    modalMode = "add";
+    setModal({
+      title: "Añadir un regalo",
+      text: "Se agregará al final de la lista y quedará disponible para los invitados.",
+      gift: true,
+      confirmLabel: "Añadir"
+    });
+    openModal(giftInput);
+  }
+
+  function openReset() {
+    if (chosenCount() === 0) {
+      showToast("Todavía no hay regalos elegidos");
+      return;
+    }
+    lastFocused = document.activeElement;
+    activeGiftId = null;
+    modalMode = "reset";
+    setModal({
+      title: "¿Reiniciar todas las reservas?",
+      text: "Se liberarán todos los regalos elegidos, pero la lista de regalos se mantiene. Esta acción no se puede deshacer.",
+      danger: true,
+      confirmLabel: "Reiniciar reservas"
+    });
+    openModal(cancelBtn);
+  }
+
+  function openImport(next) {
+    lastFocused = document.activeElement;
+    activeGiftId = null;
+    pendingImport = next;
+    modalMode = "import";
+    setModal({
+      title: "¿Importar esta copia?",
+      text: "Se reemplazarán los regalos y las reservas actuales por la copia: " +
+        next.gifts.length + " regalos y " + Object.keys(next.selections).length + " elegidos.",
+      danger: true,
+      confirmLabel: "Importar"
+    });
+    openModal(cancelBtn);
+  }
+
+  function handleConfirm() {
+    if (modalMode === "reserve") {
+      var reserveGift = giftById(activeGiftId);
+      if (!reserveGift) { closeModal(); return; }
+      if (state.selections[reserveGift.id]) {
+        refreshPublic();
+        showToast("Alguien acaba de elegir este regalo");
+        closeModal();
+        return;
+      }
+      state.selections[reserveGift.id] = {
+        name: sanitizeName(nameInput.value, 40),
+        at: new Date().toISOString()
+      };
+      persist();
+      refreshPublic();
+      showToast("“" + reserveGift.name + "” marcado como elegido");
+      closeModal();
+      return;
+    }
+
+    if (modalMode === "manual") {
+      var manualGift = giftById(activeGiftId);
+      if (!manualGift) { closeModal(); return; }
+      state.selections[manualGift.id] = {
+        name: sanitizeName(nameInput.value, 40),
+        at: new Date().toISOString()
+      };
+      persist();
+      renderAdmin();
+      showToast("“" + manualGift.name + "” marcado como elegido");
+      closeModal();
+      return;
+    }
+
+    if (modalMode === "add") {
+      var newName = sanitizeName(giftInput.value, 60);
+      if (!newName) { showToast("Escribe un nombre"); giftInput.focus(); return; }
+      if (nameExists(newName, null)) {
+        showToast("Ese regalo ya está en la lista");
+        giftInput.focus();
+        giftInput.select();
+        return;
+      }
+      state.gifts.push({
+        id: makeId(newName, new Set(state.gifts.map(function (gift) { return gift.id; }))),
+        name: newName
+      });
+      persist();
+      renderAdmin();
+      showToast("“" + newName + "” añadido");
+      closeModal();
+      return;
+    }
+
+    if (modalMode === "edit") {
+      var editGift = giftById(activeGiftId);
+      if (!editGift) { closeModal(); return; }
+      var updatedName = sanitizeName(giftInput.value, 60);
+      if (!updatedName) { showToast("Escribe un nombre"); giftInput.focus(); return; }
+      if (nameExists(updatedName, editGift.id)) {
+        showToast("Ya existe un regalo con ese nombre");
+        giftInput.focus();
+        giftInput.select();
+        return;
+      }
+      editGift.name = updatedName;
+      persist();
+      renderAdmin();
+      showToast("Regalo actualizado");
+      closeModal();
+      return;
+    }
+
+    if (modalMode === "delete") {
+      var deleteGift = giftById(activeGiftId);
+      if (!deleteGift) { closeModal(); return; }
+      state.gifts = state.gifts.filter(function (gift) { return gift.id !== deleteGift.id; });
+      delete state.selections[deleteGift.id];
+      persist();
+      renderAdmin();
+      showToast("“" + deleteGift.name + "” eliminado");
+      closeModal();
+      return;
+    }
+
+    if (modalMode === "reset") {
+      state.selections = {};
+      persist();
+      renderAdmin();
+      showToast("Reservas reiniciadas");
+      closeModal();
+      return;
+    }
+
+    if (modalMode === "import") {
+      var next = pendingImport;
+      if (!next) { closeModal(); return; }
+      state = next;
+      persist();
+      renderAdmin();
+      showToast("Lista importada");
+      closeModal();
+      return;
+    }
+
+    closeModal();
+  }
+
+  function miniButton(label, action, danger) {
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = "mini-btn" + (danger ? " is-danger" : "");
+    button.dataset.action = action;
+    button.textContent = label;
+    return button;
+  }
+
+  function buildAdminRow(gift, selection) {
+    var row = document.createElement("div");
+    row.className = "admin-row";
+    row.dataset.id = gift.id;
+
+    var giftCell = document.createElement("div");
+    giftCell.className = "admin-gift";
+    var name = document.createElement("span");
+    name.className = "admin-gift-name";
+    name.textContent = gift.name;
+    var chip = document.createElement("span");
+    chip.className = "chip " + (selection ? "chip-taken" : "chip-free");
+    chip.textContent = selection ? "Elegido" : "Disponible";
+    giftCell.appendChild(name);
+    giftCell.appendChild(chip);
+
+    var reservation = document.createElement("div");
+    reservation.className = "admin-reservation";
+    var person = document.createElement("span");
+    person.className = "admin-person";
+    person.textContent = selection ? (selection.name || "Sin nombre") : "—";
+    reservation.appendChild(person);
+    if (selection && selection.at) {
+      var date = document.createElement("span");
+      date.className = "admin-date";
+      date.textContent = formatDate(selection.at);
+      reservation.appendChild(date);
+    }
+
+    var actions = document.createElement("div");
+    actions.className = "admin-actions-cell";
+    actions.appendChild(miniButton(selection ? "Liberar" : "Reservar", selection ? "release" : "reserve", false));
+    actions.appendChild(miniButton("Editar", "edit", false));
+    actions.appendChild(miniButton("Eliminar", "delete", true));
+
+    row.appendChild(giftCell);
+    row.appendChild(reservation);
+    row.appendChild(actions);
+    return row;
+  }
+
+  function setAdminFilter(next) {
+    adminFilter = next;
+    adminSegButtons.forEach(function (button) {
+      var isActive = button.dataset.adminFilter === next;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+    renderAdmin();
+  }
+
+  function releaseGift(gift) {
+    delete state.selections[gift.id];
+    persist();
+    renderAdmin();
+    showToast("“" + gift.name + "” liberado");
+  }
+
+  function renderAdmin() {
+    var total = state.gifts.length;
+    var chosen = chosenCount();
+    var available = Math.max(total - chosen, 0);
+
+    statTotal.textContent = String(total);
+    statChosen.textContent = String(chosen);
+    statAvailable.textContent = String(available);
+
+    adminSegCounts.all.textContent = String(total);
+    adminSegCounts.available.textContent = String(available);
+    adminSegCounts.chosen.textContent = String(chosen);
+
+    var term = normalizeText(adminQuery.trim());
+    var visible = 0;
+    adminList.textContent = "";
+
+    state.gifts.forEach(function (gift) {
+      var selection = state.selections[gift.id];
+      var isChosen = Boolean(selection);
+      var matchesFilter = adminFilter === "all" || (adminFilter === "chosen" ? isChosen : !isChosen);
+      var haystack = normalizeText(gift.name + " " + (selection ? selection.name : ""));
+      var matchesQuery = !term || haystack.indexOf(term) !== -1;
+      if (!matchesFilter || !matchesQuery) return;
+      visible += 1;
+      adminList.appendChild(buildAdminRow(gift, selection));
+    });
+
+    adminListWrap.hidden = visible === 0;
+    adminEmpty.hidden = visible !== 0;
+    if (visible === 0) {
+      adminEmptyText.textContent = term
+        ? "No encontramos regalos con ese nombre."
+        : adminFilter === "chosen"
+          ? "Todavía no hay regalos elegidos."
+          : adminFilter === "available"
+            ? "¡No queda ningún regalo disponible!"
+            : "La lista está vacía. Añade un regalo para empezar.";
+    }
+  }
+
+  function todayStamp() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function downloadFile(filename, content, type) {
+    var blob = new Blob([content], { type: type });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function csvCell(value) {
+    var text = String(value == null ? "" : value);
+    if (/[",\r\n]/.test(text)) {
+      text = '"' + text.replace(/"/g, '""') + '"';
+    }
+    return text;
+  }
+
+  function exportCsv() {
+    var rows = [["Regalo", "Estado", "Persona", "Fecha"]];
+    state.gifts.forEach(function (gift) {
+      var selection = state.selections[gift.id];
+      rows.push([
+        gift.name,
+        selection ? "Elegido" : "Disponible",
+        selection ? selection.name : "",
+        selection ? formatDate(selection.at) : ""
+      ]);
+    });
+    var csv = "\uFEFF" + rows.map(function (row) {
+      return row.map(csvCell).join(",");
+    }).join("\r\n");
+    downloadFile("lista-regalos-" + todayStamp() + ".csv", csv, "text/csv;charset=utf-8");
+    showToast("CSV exportado");
+  }
+
+  function backupJson() {
+    var payload = {
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      gifts: state.gifts,
+      selections: state.selections
+    };
+    downloadFile(
+      "lista-regalos-" + todayStamp() + ".json",
+      JSON.stringify(payload, null, 2),
+      "application/json"
+    );
+    showToast("Copia de seguridad descargada");
+  }
+
+  function normalizeImported(data) {
+    if (Array.isArray(data)) {
+      data = { gifts: data, selections: {} };
+    }
+    if (!data || typeof data !== "object") return null;
+
+    var hasGiftArray = Array.isArray(data.gifts);
+    var sourceSelections = hasGiftArray
+      ? data.selections
+      : (data.selections && typeof data.selections === "object" && !Array.isArray(data.selections)
+          ? data.selections
+          : data);
+    var used = new Set();
+    var gifts = [];
+    var matched = 0;
+
+    if (hasGiftArray) {
+      data.gifts.forEach(function (item) {
+        var name = typeof item === "string"
+          ? sanitizeName(item, 60)
+          : sanitizeName(item && item.name, 60);
+        if (!name) return;
+        var rawId = item && typeof item === "object" && typeof item.id === "string" ? item.id : "";
+        var id = rawId && /^[a-z0-9-]+$/.test(rawId) && !used.has(rawId)
+          ? rawId
+          : makeId(name, used);
+        used.add(id);
+        gifts.push({ id: id, name: name });
+      });
+    } else {
+      gifts = defaultState().gifts;
+      gifts.forEach(function (gift) { used.add(gift.id); });
+    }
+
+    var selections = {};
+    if (sourceSelections && typeof sourceSelections === "object" && !Array.isArray(sourceSelections)) {
+      Object.keys(sourceSelections).forEach(function (id) {
+        if (!used.has(id)) return;
+        matched += 1;
+        var entry = sourceSelections[id];
+        var person = "";
+        var at = "";
+        if (typeof entry === "string") {
+          person = sanitizeName(entry, 40);
+        } else if (entry && typeof entry === "object") {
+          person = sanitizeName(entry.name, 40);
+          at = typeof entry.at === "string" ? entry.at : "";
+        } else {
+          return;
+        }
+        selections[id] = { name: person, at: at };
+      });
+    }
+
+    if (!hasGiftArray && matched === 0) {
+      return null;
+    }
+
+    return { gifts: gifts, selections: selections };
+  }
+
+  confirmBtn.addEventListener("click", handleConfirm);
+  cancelBtn.addEventListener("click", closeModal);
+
+  backdrop.addEventListener("click", function (event) {
+    if (event.target === backdrop) closeModal();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && !backdrop.hidden) {
+      event.preventDefault();
+      closeModal();
+    }
+  });
+
+  [nameInput, giftInput].forEach(function (input) {
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleConfirm();
+      }
+    });
+  });
+
+  searchInput.addEventListener("input", function () {
+    query = searchInput.value;
+    applyFilters();
+  });
+
+  function setFilter(next) {
+    filter = next;
+    segButtons.forEach(function (button) {
+      var isActive = button.dataset.filter === next;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+    applyFilters();
+  }
+
+  segButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      setFilter(button.dataset.filter);
+    });
+  });
+
+  emptyReset.addEventListener("click", function () {
+    searchInput.value = "";
+    query = "";
+    setFilter("all");
+  });
+
+  adminSearchInput.addEventListener("input", function () {
+    adminQuery = adminSearchInput.value;
+    renderAdmin();
+  });
+
+  adminSegButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      setAdminFilter(button.dataset.adminFilter);
+    });
+  });
+
+  adminEmptyReset.addEventListener("click", function () {
+    adminSearchInput.value = "";
+    adminQuery = "";
+    setAdminFilter("all");
+  });
+
+  adminList.addEventListener("click", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var button = target.closest("button[data-action]");
+    if (!button) return;
+    var row = button.closest("[data-id]");
+    if (!row) return;
+    var gift = giftById(row.dataset.id);
+    if (!gift) return;
+    if (button.dataset.action === "release") {
+      releaseGift(gift);
+    } else if (button.dataset.action === "reserve") {
+      openManualReserve(gift);
+    } else if (button.dataset.action === "edit") {
+      openEdit(gift);
+    } else if (button.dataset.action === "delete") {
+      openDelete(gift);
+    }
+  });
+
+  addGiftBtn.addEventListener("click", openAdd);
+  adminResetBtn.addEventListener("click", openReset);
+  exportCsvBtn.addEventListener("click", exportCsv);
+  backupJsonBtn.addEventListener("click", backupJson);
+  importJsonBtn.addEventListener("click", function () { importFile.click(); });
+
+  importFile.addEventListener("change", function () {
+    var file = importFile.files && importFile.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var parsed = null;
+      try { parsed = JSON.parse(String(reader.result)); } catch (error) { parsed = null; }
+      var next = normalizeImported(parsed);
+      importFile.value = "";
+      if (!next) {
+        showToast("El archivo no es una copia válida");
+        return;
+      }
+      openImport(next);
+    };
+    reader.onerror = function () {
+      importFile.value = "";
+      showToast("No se pudo leer el archivo");
+    };
+    reader.readAsText(file);
+  });
+
+  viewPublicBtn.addEventListener("click", function () {
+    var url = new URL(window.location.href);
+    url.searchParams.delete("admin");
+    url.hash = "";
+    window.location.href = url.toString();
+  });
+
+  if (adminMode) {
+    publicView.hidden = true;
+    adminView.hidden = false;
+    document.title = "Administrar lista · Baby shower";
+    renderAdmin();
+  } else {
+    publicView.hidden = false;
+    adminView.hidden = true;
+    document.title = "Lista de regalos · Baby shower";
+    buildCards();
+    refreshPublic();
+  }
+
+  persist();
+})();
+</script>
+</body>
+</html>
