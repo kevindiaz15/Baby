@@ -1017,6 +1017,71 @@
     text-align: center;
   }
 
+  .admin-header-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .admin-auth {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: calc(48px + env(safe-area-inset-top));
+    padding-bottom: calc(48px + env(safe-area-inset-bottom));
+  }
+
+  .admin-auth-card {
+    width: min(430px, 100%);
+    padding: 30px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--surface);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .admin-auth-card .eyebrow { margin-bottom: 16px; }
+
+  .admin-auth-card .admin-title { font-size: 2rem; }
+
+  .admin-auth-card .admin-subtitle { margin-bottom: 24px; }
+
+  .admin-auth-card .field { margin-bottom: 16px; }
+
+  .admin-auth-card .btn { width: 100%; }
+
+  .admin-auth-card .link-btn {
+    display: block;
+    margin: 14px auto 0;
+  }
+
+  .auth-error {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--red);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .sync-note {
+    margin: 18px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .sync-note.is-offline { color: #b25000; }
+
+  @media (prefers-color-scheme: dark) {
+    .sync-note.is-offline { color: #ffb340; }
+  }
+
   /* ---------- Responsive ---------- */
 
   @media (max-width: 860px) {
@@ -1215,6 +1280,18 @@
 
     .admin-header .btn { align-self: stretch; }
 
+    .admin-header-actions {
+      width: 100%;
+      gap: 6px;
+    }
+
+    .admin-header-actions .btn { flex: 1 1 auto; }
+
+    .admin-auth-card {
+      padding: 22px 20px;
+      border-radius: 22px;
+    }
+
     .admin-stats {
       gap: 8px;
       margin-bottom: 12px;
@@ -1376,19 +1453,44 @@
   </main>
 
   <footer class="footer container">
-    <p>Tu selección se guarda automáticamente en este dispositivo.</p>
+    <p id="footer-note">Tu selección se comparte al instante con la lista.</p>
     <p>Solo los organizadores pueden liberar un regalo.</p>
   </footer>
   </div>
 
   <div id="admin-view" hidden>
+    <section class="admin-auth container" id="admin-auth" hidden>
+      <div class="admin-auth-card">
+        <p class="eyebrow"><span class="pulse pulse-alert" aria-hidden="true"></span>Modo administrador</p>
+        <h1 class="admin-title">Acceso de organizadores</h1>
+        <p class="admin-subtitle">Inicia sesión con la cuenta autorizada para administrar la lista.</p>
+        <form id="admin-login-form" novalidate>
+          <label class="field" for="admin-email">
+            <span>Correo</span>
+            <input id="admin-email" type="email" inputmode="email" autocomplete="username" placeholder="correo@ejemplo.com" required>
+          </label>
+          <label class="field" for="admin-password">
+            <span>Contraseña</span>
+            <input id="admin-password" type="password" autocomplete="current-password" required>
+          </label>
+          <p class="auth-error" id="admin-auth-error" role="alert" hidden></p>
+          <button type="submit" class="btn btn-primary" id="admin-login">Entrar</button>
+        </form>
+        <button type="button" class="link-btn" id="admin-public-link">Ver lista pública</button>
+      </div>
+    </section>
+
+    <div id="admin-app" hidden>
     <header class="admin-header container">
       <div>
         <p class="eyebrow"><span class="pulse pulse-alert" aria-hidden="true"></span>Modo administrador</p>
         <h1 class="admin-title">Administrar lista</h1>
         <p class="admin-subtitle">Solo tú puedes liberar regalos y editar la lista.</p>
       </div>
-      <button type="button" class="btn btn-ghost" id="view-public">Ver lista pública</button>
+      <div class="admin-header-actions">
+        <button type="button" class="btn btn-ghost" id="logout">Cerrar sesión</button>
+        <button type="button" class="btn btn-ghost" id="view-public">Ver lista pública</button>
+      </div>
     </header>
 
     <main class="admin-main container">
@@ -1430,6 +1532,7 @@
             <button type="button" class="btn btn-ghost" id="export-csv">Exportar CSV</button>
             <button type="button" class="btn btn-ghost" id="backup-json">Copia de seguridad</button>
             <button type="button" class="btn btn-ghost" id="import-json">Importar</button>
+            <button type="button" class="btn btn-ghost" id="seed-gifts" hidden>Cargar los 25 regalos</button>
             <button type="button" class="btn btn-danger-text" id="admin-reset">Reiniciar reservas</button>
           </div>
           <input type="file" id="import-file" accept="application/json,.json" hidden>
@@ -1450,8 +1553,9 @@
         <button type="button" class="link-btn" id="admin-empty-reset">Quitar filtros</button>
       </div>
 
-      <p class="admin-note">Los cambios se guardan en este navegador. Si abres la lista en otro dispositivo, verás datos distintos.</p>
+      <p class="admin-note" id="admin-note">Los cambios se sincronizan en tiempo real con todos los dispositivos.</p>
     </main>
+    </div>
   </div>
 
   <div class="backdrop" id="backdrop" hidden>
@@ -1556,7 +1660,19 @@
   var importJsonBtn = document.getElementById("import-json");
   var importFile = document.getElementById("import-file");
   var adminResetBtn = document.getElementById("admin-reset");
+  var seedGiftsBtn = document.getElementById("seed-gifts");
   var viewPublicBtn = document.getElementById("view-public");
+  var logoutBtn = document.getElementById("logout");
+  var footerNote = document.getElementById("footer-note");
+  var adminNote = document.getElementById("admin-note");
+  var adminAuth = document.getElementById("admin-auth");
+  var adminApp = document.getElementById("admin-app");
+  var adminLoginForm = document.getElementById("admin-login-form");
+  var adminEmailInput = document.getElementById("admin-email");
+  var adminPasswordInput = document.getElementById("admin-password");
+  var adminLoginBtn = document.getElementById("admin-login");
+  var adminAuthError = document.getElementById("admin-auth-error");
+  var adminPublicLink = document.getElementById("admin-public-link");
 
   var segButtons = Array.prototype.slice.call(publicView.querySelectorAll(".seg"));
   var segCounts = {
@@ -1581,6 +1697,27 @@
     return /^#admin/i.test(window.location.hash);
   })();
 
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyB-j_yNEJfit4DGxwdL924IkmaArzlHmUI",
+    authDomain: "babysho.firebaseapp.com",
+    projectId: "babysho",
+    storageBucket: "babysho.firebasestorage.app",
+    messagingSenderId: "953477952288",
+    appId: "1:953477952288:web:8f91b9819a1eb03088dd45"
+  };
+  var ADMIN_EMAIL = "polsion155@gmail.com";
+  var CLOUD = {
+    enabled: false,
+    auth: null,
+    db: null,
+    sdk: null,
+    user: null,
+    isAdmin: false,
+    unsubscribe: null,
+    lastGiftSignature: "",
+    adminListener: false
+  };
+
   var cards = new Map();
   var filter = "all";
   var query = "";
@@ -1592,6 +1729,7 @@
   var lastFocused = null;
   var hideTimer = 0;
   var toastTimer = 0;
+  var busy = false;
 
   function normalizeText(value) {
     return String(value == null ? "" : value)
@@ -1703,6 +1841,428 @@
     if (saved) {
       try { localStorage.removeItem(LEGACY_KEY); } catch (error) { /* sin datos previos */ }
     }
+  }
+
+  function setSyncStatus(mode) {
+    if (mode === "cloud") {
+      if (footerNote) footerNote.textContent = "Tu selección se comparte al instante con la lista.";
+      if (adminNote) {
+        adminNote.textContent = "Los cambios se sincronizan en tiempo real con todos los dispositivos.";
+        adminNote.classList.remove("is-offline");
+      }
+      return;
+    }
+
+    if (mode === "offline") {
+      if (footerNote) footerNote.textContent = "Sin conexión: se muestra la última copia guardada.";
+      if (adminNote) {
+        adminNote.textContent = "Sin conexión: se muestra la última copia guardada. Los cambios necesitan conexión.";
+        adminNote.classList.add("is-offline");
+      }
+      return;
+    }
+
+    if (footerNote) footerNote.textContent = "Tu selección se guarda automáticamente en este dispositivo.";
+    if (adminNote) {
+      adminNote.textContent = "Los cambios se guardan en este navegador. Si abres la lista en otro dispositivo, verás datos distintos.";
+      adminNote.classList.add("is-offline");
+    }
+  }
+
+  function cloudErrorText(error) {
+    var code = error && error.code ? error.code : "";
+    var message = error && error.message ? error.message : "";
+
+    if (message === "taken") return "Alguien acaba de elegir este regalo.";
+    if (message === "missing") return "Ese regalo ya no existe.";
+    if (message === "not-empty") return "La lista ya tiene regalos.";
+    if (code === "permission-denied") return "No tienes permiso para hacer ese cambio.";
+    if (code === "unavailable" || code === "failed-precondition" || code === "deadline-exceeded") {
+      return "Sin conexión. Intenta de nuevo.";
+    }
+    if (code === "auth/unauthorized-domain") return "Este dominio no está autorizado en Firebase.";
+    if (code === "auth/operation-not-allowed") return "El acceso con correo o anónimo no está habilitado.";
+    if (code === "auth/invalid-credential" || code === "auth/wrong-password" || code === "auth/user-not-found") {
+      return "Correo o contraseña incorrectos.";
+    }
+    if (code === "auth/invalid-email") return "El correo no es válido.";
+    if (code === "auth/too-many-requests") return "Demasiados intentos. Espera un momento.";
+    if (code === "auth/network-request-failed") return "Sin conexión. Revisa tu red.";
+    return "No se pudo completar la acción. Intenta de nuevo.";
+  }
+
+  async function initCloud() {
+    if (window.location.protocol === "file:") {
+      setSyncStatus("local");
+      return false;
+    }
+
+    try {
+      var appMod = await import("https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js");
+      var authMod = await import("https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js");
+      var fsMod = await import("https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js");
+      var app = appMod.initializeApp(FIREBASE_CONFIG);
+
+      CLOUD.sdk = { app: appMod, auth: authMod, fs: fsMod };
+      CLOUD.auth = authMod.getAuth(app);
+      CLOUD.db = fsMod.getFirestore(app, "default");
+      CLOUD.enabled = true;
+      return true;
+    } catch (error) {
+      CLOUD.enabled = false;
+      setSyncStatus("offline");
+      showToast("No se pudo conectar con Firebase. Usando la copia local.");
+      return false;
+    }
+  }
+
+  async function ensureGuestAuth() {
+    if (!CLOUD.enabled) return;
+    if (CLOUD.auth.currentUser) return;
+    await CLOUD.sdk.auth.signInAnonymously(CLOUD.auth);
+  }
+
+  function subscribeGifts() {
+    if (!CLOUD.enabled) return;
+    if (CLOUD.unsubscribe) {
+      CLOUD.unsubscribe();
+      CLOUD.unsubscribe = null;
+    }
+
+    var fs = CLOUD.sdk.fs;
+    var giftsQuery = fs.query(
+      fs.collection(CLOUD.db, "gifts"),
+      fs.orderBy("order")
+    );
+
+    CLOUD.unsubscribe = fs.onSnapshot(giftsQuery, applySnapshot, function () {
+      setSyncStatus("offline");
+      showToast("No se pudo sincronizar la lista");
+    });
+  }
+
+  function applySnapshot(snapshot) {
+    var gifts = [];
+    var selections = {};
+
+    snapshot.forEach(function (docSnap) {
+      var data = docSnap.data() || {};
+      var name = sanitizeName(data.name, 60);
+      if (!name) return;
+
+      var order = typeof data.order === "number" ? data.order : 999999;
+      gifts.push({ id: docSnap.id, name: name, order: order });
+
+      if (data.reservedByUid || data.reservedBy) {
+        var at = "";
+        if (data.reservedAt && typeof data.reservedAt.toDate === "function") {
+          at = data.reservedAt.toDate().toISOString();
+        } else if (data.reservedAt instanceof Date) {
+          at = data.reservedAt.toISOString();
+        }
+        selections[docSnap.id] = {
+          name: sanitizeName(data.reservedBy, 40),
+          at: at
+        };
+      }
+    });
+
+    gifts.sort(function (a, b) {
+      return a.order - b.order || a.name.localeCompare(b.name, "es");
+    });
+
+    var signature = gifts.map(function (gift) {
+      return gift.id + "|" + gift.name + "|" + gift.order;
+    }).join("\n");
+
+    state = {
+      gifts: gifts.map(function (gift) {
+        return { id: gift.id, name: gift.name, _order: gift.order };
+      }),
+      selections: selections
+    };
+
+    persist();
+
+    if (adminMode) {
+      renderAdmin();
+    } else {
+      if (signature !== CLOUD.lastGiftSignature) {
+        CLOUD.lastGiftSignature = signature;
+        buildCards();
+      }
+      refreshPublic();
+    }
+
+    setSyncStatus("cloud");
+  }
+
+  function nextOrder() {
+    var max = -1;
+    state.gifts.forEach(function (gift) {
+      if (typeof gift._order === "number" && gift._order > max) max = gift._order;
+    });
+    return max + 1;
+  }
+
+  async function reserveCloud(gift, name) {
+    var fs = CLOUD.sdk.fs;
+    await fs.runTransaction(CLOUD.db, async function (transaction) {
+      var ref = fs.doc(CLOUD.db, "gifts", gift.id);
+      var snapshot = await transaction.get(ref);
+      if (!snapshot.exists()) throw new Error("missing");
+      var data = snapshot.data() || {};
+      if (data.reservedByUid || data.reservedBy) throw new Error("taken");
+
+      transaction.update(ref, {
+        reservedBy: sanitizeName(name, 40),
+        reservedByUid: CLOUD.auth.currentUser.uid,
+        reservedAt: fs.serverTimestamp()
+      });
+    });
+  }
+
+  async function adminReserveCloud(gift, name) {
+    var fs = CLOUD.sdk.fs;
+    await fs.updateDoc(fs.doc(CLOUD.db, "gifts", gift.id), {
+      reservedBy: sanitizeName(name, 40),
+      reservedByUid: CLOUD.auth.currentUser.uid,
+      reservedAt: fs.serverTimestamp()
+    });
+  }
+
+  async function releaseCloud(giftId) {
+    var fs = CLOUD.sdk.fs;
+    await fs.updateDoc(fs.doc(CLOUD.db, "gifts", giftId), {
+      reservedBy: null,
+      reservedByUid: null,
+      reservedAt: null
+    });
+  }
+
+  async function addGiftCloud(gift) {
+    var fs = CLOUD.sdk.fs;
+    await fs.setDoc(fs.doc(CLOUD.db, "gifts", gift.id), {
+      name: gift.name,
+      order: nextOrder(),
+      reservedBy: null,
+      reservedByUid: null,
+      reservedAt: null
+    });
+  }
+
+  async function editGiftCloud(giftId, name) {
+    var fs = CLOUD.sdk.fs;
+    await fs.updateDoc(fs.doc(CLOUD.db, "gifts", giftId), { name: name });
+  }
+
+  async function deleteGiftCloud(giftId) {
+    var fs = CLOUD.sdk.fs;
+    await fs.deleteDoc(fs.doc(CLOUD.db, "gifts", giftId));
+  }
+
+  async function resetCloud() {
+    var fs = CLOUD.sdk.fs;
+    var snapshot = await fs.getDocs(fs.collection(CLOUD.db, "gifts"));
+    var batch = fs.writeBatch(CLOUD.db);
+    var operations = 0;
+
+    snapshot.forEach(function (docSnap) {
+      var data = docSnap.data() || {};
+      if (!data.reservedByUid && !data.reservedBy && !data.reservedAt) return;
+      batch.update(docSnap.ref, {
+        reservedBy: null,
+        reservedByUid: null,
+        reservedAt: null
+      });
+      operations += 1;
+    });
+
+    if (operations) await batch.commit();
+  }
+
+  async function importCloud(next) {
+    var fs = CLOUD.sdk.fs;
+    var existing = await fs.getDocs(fs.collection(CLOUD.db, "gifts"));
+    var removeBatch = fs.writeBatch(CLOUD.db);
+    existing.forEach(function (docSnap) {
+      removeBatch.delete(docSnap.ref);
+    });
+    if (!existing.empty) await removeBatch.commit();
+
+    var addBatch = fs.writeBatch(CLOUD.db);
+    next.gifts.forEach(function (gift, index) {
+      var selection = next.selections[gift.id];
+      addBatch.set(fs.doc(CLOUD.db, "gifts", gift.id), {
+        name: gift.name,
+        order: index,
+        reservedBy: selection ? sanitizeName(selection.name, 40) : null,
+        reservedByUid: selection ? CLOUD.auth.currentUser.uid : null,
+        reservedAt: selection ? fs.serverTimestamp() : null
+      });
+    });
+    await addBatch.commit();
+  }
+
+  async function seedCloud() {
+    var fs = CLOUD.sdk.fs;
+    var existing = await fs.getDocs(fs.collection(CLOUD.db, "gifts"));
+    if (!existing.empty) throw new Error("not-empty");
+
+    var used = new Set();
+    var batch = fs.writeBatch(CLOUD.db);
+    DEFAULT_GIFTS.forEach(function (name, index) {
+      var id = makeId(name, used);
+      used.add(id);
+      batch.set(fs.doc(CLOUD.db, "gifts", id), {
+        name: name,
+        order: index,
+        reservedBy: null,
+        reservedByUid: null,
+        reservedAt: null
+      });
+    });
+    await batch.commit();
+  }
+
+  function showAuthError(message) {
+    adminAuthError.textContent = message || "";
+    adminAuthError.hidden = !message;
+  }
+
+  function showAdminLogin() {
+    publicView.hidden = true;
+    adminView.hidden = false;
+    adminApp.hidden = true;
+    adminAuth.hidden = false;
+    document.title = "Acceso · Baby shower";
+    if (!adminEmailInput.value) adminEmailInput.value = ADMIN_EMAIL;
+  }
+
+  function showAdminApp() {
+    publicView.hidden = true;
+    adminView.hidden = false;
+    adminAuth.hidden = true;
+    adminApp.hidden = false;
+    document.title = "Administrar lista · Baby shower";
+    renderAdmin();
+  }
+
+  function setupAdminAuth() {
+    if (CLOUD.adminListener) return;
+    CLOUD.adminListener = true;
+    showAdminLogin();
+
+    CLOUD.sdk.auth.onAuthStateChanged(CLOUD.auth, async function (user) {
+      if (user && user.email && user.email.toLowerCase() === ADMIN_EMAIL) {
+        CLOUD.user = user;
+        CLOUD.isAdmin = true;
+        showAuthError("");
+        showAdminApp();
+        subscribeGifts();
+        return;
+      }
+
+      if (CLOUD.unsubscribe) {
+        CLOUD.unsubscribe();
+        CLOUD.unsubscribe = null;
+      }
+      CLOUD.user = user || null;
+      CLOUD.isAdmin = false;
+
+      if (user && user.email) {
+        showAuthError("Esa cuenta no está autorizada para administrar la lista.");
+        try { await CLOUD.sdk.auth.signOut(CLOUD.auth); } catch (error) { /* sin sesión */ }
+      }
+
+      showAdminLogin();
+    });
+  }
+
+  async function loginAdmin(event) {
+    event.preventDefault();
+    if (!CLOUD.enabled) {
+      showAuthError("Firebase no está disponible.");
+      return;
+    }
+
+    var email = sanitizeName(adminEmailInput.value, 120).toLowerCase();
+    var password = adminPasswordInput.value;
+    showAuthError("");
+
+    if (!email || !password) {
+      showAuthError("Escribe el correo y la contraseña.");
+      return;
+    }
+
+    adminLoginBtn.disabled = true;
+    adminLoginBtn.textContent = "Entrando…";
+    try {
+      await CLOUD.sdk.auth.signInWithEmailAndPassword(CLOUD.auth, email, password);
+      adminPasswordInput.value = "";
+    } catch (error) {
+      showAuthError(cloudErrorText(error));
+    } finally {
+      adminLoginBtn.disabled = false;
+      adminLoginBtn.textContent = "Entrar";
+    }
+  }
+
+  async function logoutAdmin() {
+    if (!CLOUD.enabled) return;
+    try { await CLOUD.sdk.auth.signOut(CLOUD.auth); } catch (error) { /* sin sesión */ }
+    showAuthError("");
+    showAdminLogin();
+  }
+
+  async function setupPublic() {
+    if (!CLOUD.enabled) {
+      buildCards();
+      refreshPublic();
+      return;
+    }
+
+    buildCards();
+    refreshPublic();
+
+    try {
+      await ensureGuestAuth();
+    } catch (error) {
+      showToast("No se pudo iniciar sesión de invitado. Podrás ver la lista, pero no reservar.");
+    }
+
+    subscribeGifts();
+  }
+
+  async function boot() {
+    var cloudReady = await initCloud();
+
+    if (adminMode) {
+      publicView.hidden = true;
+      adminView.hidden = false;
+      if (cloudReady) {
+        setupAdminAuth();
+      } else {
+        adminAuth.hidden = true;
+        adminApp.hidden = false;
+        document.title = "Administrar lista · Baby shower";
+        renderAdmin();
+      }
+    } else {
+      publicView.hidden = false;
+      adminView.hidden = true;
+      adminAuth.hidden = true;
+      adminApp.hidden = true;
+      document.title = "Lista de regalos · Baby shower";
+      if (cloudReady) {
+        await setupPublic();
+      } else {
+        buildCards();
+        refreshPublic();
+      }
+    }
+
+    persist();
   }
 
   function statusLabel(selection) {
@@ -2013,7 +2573,21 @@
     openModal(cancelBtn);
   }
 
-  function handleConfirm() {
+  function openSeed() {
+    lastFocused = document.activeElement;
+    activeGiftId = null;
+    modalMode = "seed";
+    setModal({
+      title: "¿Cargar los 25 regalos?",
+      text: "La lista está vacía. Se añadirán los 25 regalos iniciales para que los invitados puedan elegir.",
+      confirmLabel: "Cargar regalos"
+    });
+    openModal(cancelBtn);
+  }
+
+  async function handleConfirm() {
+    if (busy) return;
+
     if (modalMode === "reserve") {
       var reserveGift = giftById(activeGiftId);
       if (!reserveGift) { closeModal(); return; }
@@ -2023,6 +2597,27 @@
         closeModal();
         return;
       }
+
+      if (CLOUD.enabled) {
+        busy = true;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Guardando…";
+        try {
+          await ensureGuestAuth();
+          await reserveCloud(reserveGift, nameInput.value);
+          closeModal();
+          showToast("“" + reserveGift.name + "” marcado como elegido");
+        } catch (error) {
+          if (error && error.message === "taken") closeModal();
+          showToast(cloudErrorText(error));
+        } finally {
+          busy = false;
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Marcar como elegido";
+        }
+        return;
+      }
+
       state.selections[reserveGift.id] = {
         name: sanitizeName(nameInput.value, 40),
         at: new Date().toISOString()
@@ -2037,8 +2632,28 @@
     if (modalMode === "manual") {
       var manualGift = giftById(activeGiftId);
       if (!manualGift) { closeModal(); return; }
+      var manualName = sanitizeName(nameInput.value, 40);
+
+      if (CLOUD.enabled) {
+        busy = true;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Guardando…";
+        try {
+          await adminReserveCloud(manualGift, manualName);
+          closeModal();
+          showToast("“" + manualGift.name + "” marcado como elegido");
+        } catch (error) {
+          showToast(cloudErrorText(error));
+        } finally {
+          busy = false;
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Guardar reserva";
+        }
+        return;
+      }
+
       state.selections[manualGift.id] = {
-        name: sanitizeName(nameInput.value, 40),
+        name: manualName,
         at: new Date().toISOString()
       };
       persist();
@@ -2057,10 +2672,30 @@
         giftInput.select();
         return;
       }
-      state.gifts.push({
+      var newGift = {
         id: makeId(newName, new Set(state.gifts.map(function (gift) { return gift.id; }))),
         name: newName
-      });
+      };
+
+      if (CLOUD.enabled) {
+        busy = true;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Añadiendo…";
+        try {
+          await addGiftCloud(newGift);
+          closeModal();
+          showToast("“" + newName + "” añadido");
+        } catch (error) {
+          showToast(cloudErrorText(error));
+        } finally {
+          busy = false;
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Añadir";
+        }
+        return;
+      }
+
+      state.gifts.push(newGift);
       persist();
       renderAdmin();
       showToast("“" + newName + "” añadido");
@@ -2079,6 +2714,25 @@
         giftInput.select();
         return;
       }
+
+      if (CLOUD.enabled) {
+        busy = true;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Guardando…";
+        try {
+          await editGiftCloud(editGift.id, updatedName);
+          closeModal();
+          showToast("Regalo actualizado");
+        } catch (error) {
+          showToast(cloudErrorText(error));
+        } finally {
+          busy = false;
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Guardar cambios";
+        }
+        return;
+      }
+
       editGift.name = updatedName;
       persist();
       renderAdmin();
@@ -2090,6 +2744,25 @@
     if (modalMode === "delete") {
       var deleteGift = giftById(activeGiftId);
       if (!deleteGift) { closeModal(); return; }
+
+      if (CLOUD.enabled) {
+        busy = true;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Eliminando…";
+        try {
+          await deleteGiftCloud(deleteGift.id);
+          closeModal();
+          showToast("“" + deleteGift.name + "” eliminado");
+        } catch (error) {
+          showToast(cloudErrorText(error));
+        } finally {
+          busy = false;
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Eliminar";
+        }
+        return;
+      }
+
       state.gifts = state.gifts.filter(function (gift) { return gift.id !== deleteGift.id; });
       delete state.selections[deleteGift.id];
       persist();
@@ -2100,6 +2773,24 @@
     }
 
     if (modalMode === "reset") {
+      if (CLOUD.enabled) {
+        busy = true;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Reiniciando…";
+        try {
+          await resetCloud();
+          closeModal();
+          showToast("Reservas reiniciadas");
+        } catch (error) {
+          showToast(cloudErrorText(error));
+        } finally {
+          busy = false;
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Reiniciar reservas";
+        }
+        return;
+      }
+
       state.selections = {};
       persist();
       renderAdmin();
@@ -2111,11 +2802,48 @@
     if (modalMode === "import") {
       var next = pendingImport;
       if (!next) { closeModal(); return; }
+
+      if (CLOUD.enabled) {
+        busy = true;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Importando…";
+        try {
+          await importCloud(next);
+          closeModal();
+          showToast("Lista importada");
+        } catch (error) {
+          showToast(cloudErrorText(error));
+        } finally {
+          busy = false;
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Importar";
+        }
+        return;
+      }
+
       state = next;
       persist();
       renderAdmin();
       showToast("Lista importada");
       closeModal();
+      return;
+    }
+
+    if (modalMode === "seed") {
+      busy = true;
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = "Cargando…";
+      try {
+        await seedCloud();
+        closeModal();
+        showToast("Lista inicial cargada");
+      } catch (error) {
+        showToast(cloudErrorText(error));
+      } finally {
+        busy = false;
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = "Cargar regalos";
+      }
       return;
     }
 
@@ -2182,7 +2910,17 @@
     renderAdmin();
   }
 
-  function releaseGift(gift) {
+  async function releaseGift(gift) {
+    if (CLOUD.enabled) {
+      try {
+        await releaseCloud(gift.id);
+        showToast("“" + gift.name + "” liberado");
+      } catch (error) {
+        showToast(cloudErrorText(error));
+      }
+      return;
+    }
+
     delete state.selections[gift.id];
     persist();
     renderAdmin();
@@ -2201,6 +2939,7 @@
     adminSegCounts.all.textContent = String(total);
     adminSegCounts.available.textContent = String(available);
     adminSegCounts.chosen.textContent = String(chosen);
+    seedGiftsBtn.hidden = !(CLOUD.enabled && CLOUD.isAdmin && total === 0);
 
     var term = normalizeText(adminQuery.trim());
     var visible = 0;
@@ -2276,7 +3015,9 @@
     var payload = {
       version: 2,
       exportedAt: new Date().toISOString(),
-      gifts: state.gifts,
+      gifts: state.gifts.map(function (gift) {
+        return { id: gift.id, name: gift.name };
+      }),
       selections: state.selections
     };
     downloadFile(
@@ -2463,27 +3204,20 @@
     reader.readAsText(file);
   });
 
-  viewPublicBtn.addEventListener("click", function () {
+  function goPublic() {
     var url = new URL(window.location.href);
     url.searchParams.delete("admin");
     url.hash = "";
     window.location.href = url.toString();
-  });
-
-  if (adminMode) {
-    publicView.hidden = true;
-    adminView.hidden = false;
-    document.title = "Administrar lista · Baby shower";
-    renderAdmin();
-  } else {
-    publicView.hidden = false;
-    adminView.hidden = true;
-    document.title = "Lista de regalos · Baby shower";
-    buildCards();
-    refreshPublic();
   }
 
-  persist();
+  viewPublicBtn.addEventListener("click", goPublic);
+  adminPublicLink.addEventListener("click", goPublic);
+  adminLoginForm.addEventListener("submit", loginAdmin);
+  logoutBtn.addEventListener("click", logoutAdmin);
+  seedGiftsBtn.addEventListener("click", openSeed);
+
+  boot();
 })();
 </script>
 </body>
